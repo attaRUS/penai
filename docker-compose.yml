@@ -1,0 +1,28 @@
+version: "3.8"
+
+services:
+  web:
+    build: .
+    command: uvicorn app.app:app --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+      - llm_service
+    environment:
+      - BASE_OUTPUT_DIR=/data/pentest_results
+    restart: unless-stopped
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
+  llm_service:
+    image: ghcr.io/example/llm-local:latest
+    ports:
+      - "11434:11434"
+    restart: unless-stopped
